@@ -8,14 +8,30 @@ pub struct Config {
 
 impl Config {
     pub fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
+        let args_count = args.len();
+
+        if args_count < 3 {
             return Err("not enough arguments");
         }
 
         let query = args[1].clone();
         let file_path = args[2].clone();
 
-        let ignore_case = env::var("IGNORE_CASE").is_ok();
+        let mut ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        if args_count < 4 {
+            return Ok(Config {
+                query,
+                file_path,
+                ignore_case
+            });
+        }
+
+        let flag = args[3].clone();
+
+        if flag.to_lowercase() == "-ignore_case" {
+            ignore_case = true;
+        }
 
         Ok(Config {
             query,
